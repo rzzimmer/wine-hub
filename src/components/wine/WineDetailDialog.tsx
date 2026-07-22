@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BottleRating } from "./BottleRating";
+import { GlossaryText } from "./GlossaryText";
 import { WINE_STATUS_LABELS, type Wine } from "@/lib/wine-types";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -79,7 +80,10 @@ export function WineDetailDialog({ wine, onOpenChange, onEdit, onDelete }: Props
             <p className="text-xs uppercase tracking-wider text-muted-foreground mb-1">
               Observações
             </p>
-            <p className="text-sm italic text-foreground/90 whitespace-pre-wrap">{wine.notes}</p>
+            <GlossaryText
+              text={wine.notes}
+              className="text-sm italic text-foreground/90 whitespace-pre-wrap block"
+            />
           </div>
         )}
 
