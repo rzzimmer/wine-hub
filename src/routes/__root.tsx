@@ -83,20 +83,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Registre, avalie e explore sua jornada pelos vinhos em uma adega digital com estética vintage.",
+          "Registre, avalie e explore sua jornada pelos vinhos. Uma adega digital com estética vintage para colecionadores e curiosos.",
       },
       { name: "author", content: "Wine Hub" },
       { property: "og:title", content: "Wine Hub — Sua adega pessoal" },
       {
         property: "og:description",
-        content: "Sua adega digital: registre garrafas, harmonizações e memórias.",
+        content: "Registre, avalie e explore sua jornada pelos vinhos. Uma adega digital com estética vintage para colecionadores e curiosos.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Wine Hub — Sua adega pessoal" },
+      { name: "twitter:description", content: "Registre, avalie e explore sua jornada pelos vinhos. Uma adega digital com estética vintage para colecionadores e curiosos." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ff24a76b-1367-4291-b0e2-9056a0ddc6e0/id-preview-113b9f42--5c62e474-1f55-4c38-adf4-8f3b24bb09b6.lovable.app-1784748582265.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ff24a76b-1367-4291-b0e2-9056a0ddc6e0/id-preview-113b9f42--5c62e474-1f55-4c38-adf4-8f3b24bb09b6.lovable.app-1784748582265.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

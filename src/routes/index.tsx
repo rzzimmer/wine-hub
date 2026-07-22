@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Wine Hub — Sua adega pessoal" },
       {
         property: "og:description",
-        content: "Sua adega digital: registre garrafas, harmonizações e memórias.",
+        content: "Registre, avalie e explore sua jornada pelos vinhos. Uma adega digital com estética vintage para colecionadores e curiosos.",
       },
     ],
   }),
