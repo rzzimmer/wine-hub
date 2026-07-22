@@ -113,7 +113,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR" className="dark">
       <head>
         <HeadContent />
       </head>
@@ -132,6 +132,18 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster
+        position="top-center"
+        theme="dark"
+        toastOptions={{
+          style: {
+            background: "oklch(0.23 0.028 260)",
+            color: "oklch(0.94 0.02 85)",
+            border: "1px solid oklch(0.82 0.14 82 / 0.3)",
+            fontFamily: "Lora, serif",
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }
