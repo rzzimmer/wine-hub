@@ -7,6 +7,7 @@ import { EmptyShelf } from "@/components/wine/EmptyShelf";
 import { AddWineFab } from "@/components/wine/AddWineFab";
 import { WineFormDialog } from "@/components/wine/WineFormDialog";
 import { WineDetailDialog } from "@/components/wine/WineDetailDialog";
+import { SiteNav } from "@/components/SiteNav";
 import type { Wine, WineInput } from "@/lib/wine-types";
 
 export const Route = createFileRoute("/")({
