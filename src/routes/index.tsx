@@ -85,7 +85,9 @@ function Index() {
         }}
       />
 
-      <header className="mx-auto max-w-6xl px-5 pt-10 pb-6 text-center">
+      <SiteNav />
+
+      <header className="mx-auto max-w-6xl px-5 pt-6 pb-6 text-center">
         <p className="text-[11px] uppercase tracking-[0.4em] text-gold/80">Wine Hub</p>
         <h1 className="mt-2 font-serif text-4xl md:text-5xl text-foreground">
           A sua adega
