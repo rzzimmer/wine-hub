@@ -1,26 +1,19 @@
-const AUTH_KEY = "wine-hub:auth:v1";
+import { supabase } from "@/integrations/supabase/client";
 
-export function isAuthenticated(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(AUTH_KEY) === "true";
-  } catch {
-    return false;
-  }
+export async function signIn(email: string, password: string) {
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
 }
 
-export function mockLogin(_email: string, _password: string): void {
-  try {
-    window.localStorage.setItem(AUTH_KEY, "true");
-  } catch (err) {
-    console.error("Failed to persist auth session", err);
-  }
+export async function signUp(email: string, password: string) {
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: window.location.origin },
+  });
+  if (error) throw error;
 }
 
-export function mockLogout(): void {
-  try {
-    window.localStorage.removeItem(AUTH_KEY);
-  } catch (err) {
-    console.error("Failed to clear auth session", err);
-  }
+export async function signOut() {
+  await supabase.auth.signOut();
 }
