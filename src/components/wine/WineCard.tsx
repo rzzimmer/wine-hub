@@ -1,21 +1,45 @@
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BottleIcon } from "./BottleIcon";
 import { BottleRating } from "./BottleRating";
 import { WINE_STATUS_LABELS, type Wine } from "@/lib/wine-types";
 
-export function WineCard({ wine, onClick }: { wine: Wine; onClick: () => void }) {
+interface WineCardProps {
+  wine: Wine;
+  onClick: () => void;
+  compareMode?: boolean;
+  selected?: boolean;
+  selectionDisabled?: boolean;
+}
+
+export function WineCard({
+  wine,
+  onClick,
+  compareMode = false,
+  selected = false,
+  selectionDisabled = false,
+}: WineCardProps) {
   const isPerfect = wine.rating === 5;
   return (
     <button
       onClick={onClick}
+      disabled={compareMode && selectionDisabled}
+      aria-pressed={compareMode ? selected : undefined}
       className={cn(
         "shelf-item group relative flex flex-col items-center rounded-md",
         "bg-gradient-to-b from-card/80 to-card/40 backdrop-blur",
         "border border-border/60 p-4 text-left w-full",
         "hover:border-gold/50",
-        isPerfect && "ring-1 ring-gold/40 gold-pulse",
+        isPerfect && !compareMode && "ring-1 ring-gold/40 gold-pulse",
+        compareMode && selected && "border-gold/60 ring-2 ring-gold/40",
+        compareMode && selectionDisabled && "cursor-not-allowed opacity-40 hover:border-border/60",
       )}
     >
+      {compareMode && selected && (
+        <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-primary-foreground">
+          <Check className="h-3.5 w-3.5" aria-hidden />
+        </span>
+      )}
       <div className="relative flex h-40 w-full items-end justify-center pb-2">
         {wine.imageDataUrl ? (
           <img
