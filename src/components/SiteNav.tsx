@@ -1,9 +1,15 @@
-import { Link } from "@tanstack/react-router";
-import { BarChart3, BookOpen, Users, Wine, Lightbulb } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { BarChart3, BookOpen, LogOut, Users, Wine, Lightbulb } from "lucide-react";
+import { signOut } from "@/lib/auth";
 
 export function SiteNav() {
+  const navigate = useNavigate();
+  async function handleLogout() {
+    await signOut();
+    navigate({ to: "/login", replace: true });
+  }
   return (
-    <nav className="mx-auto flex max-w-6xl items-center justify-center gap-1 px-2 pt-6 sm:px-4">
+    <nav className="mx-auto flex max-w-6xl items-center justify-center gap-2 px-2 pt-6 sm:px-4">
       <div className="flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full border border-border/60 bg-card/60 p-1 backdrop-blur sm:gap-1">
         <Link
           to="/"
@@ -42,6 +48,14 @@ export function SiteNav() {
           Sugestões
         </Link>
       </div>
+      <button
+        type="button"
+        onClick={handleLogout}
+        aria-label="Sair"
+        className="flex shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/60 p-2 text-muted-foreground backdrop-blur transition-colors hover:text-gold"
+      >
+        <LogOut className="h-3.5 w-3.5" />
+      </button>
     </nav>
   );
 }
