@@ -58,8 +58,8 @@ function NotesPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [focus]);
 
-  function createNew() {
-    const note = addNote({ title: "Nova anotação", content: "", tags: [] });
+  async function createNew() {
+    const note = await addNote({ title: "Nova anotação", content: "", tags: [] });
     setSelectedId(note.id);
     setFocus(false);
   }

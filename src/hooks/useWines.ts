@@ -107,7 +107,7 @@ export function useWines() {
     }
     const { data, error } = await supabase
       .from("wines")
-      .update(payload)
+      .update(payload as never)
       .eq("id", id)
       .select()
       .single();
