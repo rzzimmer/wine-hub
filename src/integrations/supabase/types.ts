@@ -522,6 +522,93 @@ export type Database = {
           },
         ]
       }
+      wine_notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          tags: string[]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wines: {
+        Row: {
+          company: string | null
+          consumed_at: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          notes: string | null
+          pairing: string | null
+          price: number | null
+          purchase_place: string | null
+          rating: number
+          status: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+          winery: string
+        }
+        Insert: {
+          company?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          notes?: string | null
+          pairing?: string | null
+          price?: number | null
+          purchase_place?: string | null
+          rating?: number
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+          winery: string
+        }
+        Update: {
+          company?: string | null
+          consumed_at?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          notes?: string | null
+          pairing?: string | null
+          price?: number | null
+          purchase_place?: string | null
+          rating?: number
+          status?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+          winery?: string
+        }
+        Relationships: []
+      }
       workspace_invites: {
         Row: {
           accepted_at: string | null
