@@ -1,78 +1,90 @@
 import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import type { Note, NoteInput } from "@/lib/note-types";
 
-const STORAGE_KEY = "wine-hub:notes:v1";
-const CHANGE_EVENT = "wine-hub:notes:change";
+type NoteRow = {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  tags: string[] | null;
+  created_at: string;
+  updated_at: string;
+};
 
-function read(): Note[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as Note[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function write(notes: Note[]) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
-    window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
-  } catch (err) {
-    console.error("Failed to persist notes", err);
-  }
+function fromRow(r: NoteRow): Note {
+  return {
+    id: r.id,
+    title: r.title,
+    content: r.content ?? "",
+    tags: r.tags ?? [],
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
 }
 
 export function useNotes() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    setNotes(read());
+  const load = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("wine_notes")
+      .select("*")
+      .order("updated_at", { ascending: false });
+    if (error) {
+      console.error("load notes", error);
+      setNotes([]);
+    } else {
+      setNotes((data as NoteRow[]).map(fromRow));
+    }
     setHydrated(true);
-    const sync = () => setNotes(read());
-    window.addEventListener(CHANGE_EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(CHANGE_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
   }, []);
 
-  const addNote = useCallback((input: NoteInput) => {
-    const now = new Date().toISOString();
-    const note: Note = {
-      ...input,
-      id: crypto.randomUUID(),
-      createdAt: now,
-      updatedAt: now,
-    };
-    setNotes((prev) => {
-      const next = [note, ...prev];
-      write(next);
-      return next;
-    });
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const addNote = useCallback(async (input: NoteInput) => {
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user?.id;
+    if (!uid) throw new Error("not authenticated");
+    const { data, error } = await supabase
+      .from("wine_notes")
+      .insert({
+        user_id: uid,
+        title: input.title,
+        content: input.content ?? "",
+        tags: input.tags ?? [],
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    const note = fromRow(data as NoteRow);
+    setNotes((prev) => [note, ...prev]);
     return note;
   }, []);
 
-  const updateNote = useCallback((id: string, patch: Partial<NoteInput>) => {
-    setNotes((prev) => {
-      const next = prev.map((n) =>
-        n.id === id ? { ...n, ...patch, updatedAt: new Date().toISOString() } : n,
-      );
-      write(next);
-      return next;
-    });
+  const updateNote = useCallback(async (id: string, patch: Partial<NoteInput>) => {
+    const { data, error } = await supabase
+      .from("wine_notes")
+      .update({
+        ...(patch.title !== undefined ? { title: patch.title } : {}),
+        ...(patch.content !== undefined ? { content: patch.content } : {}),
+        ...(patch.tags !== undefined ? { tags: patch.tags } : {}),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw error;
+    const note = fromRow(data as NoteRow);
+    setNotes((prev) => prev.map((n) => (n.id === id ? note : n)));
   }, []);
 
-  const removeNote = useCallback((id: string) => {
-    setNotes((prev) => {
-      const next = prev.filter((n) => n.id !== id);
-      write(next);
-      return next;
-    });
+  const removeNote = useCallback(async (id: string) => {
+    const { error } = await supabase.from("wine_notes").delete().eq("id", id);
+    if (error) throw error;
+    setNotes((prev) => prev.filter((n) => n.id !== id));
   }, []);
 
   return { notes, hydrated, addNote, updateNote, removeNote };

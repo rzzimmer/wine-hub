@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { mockLogin } from "@/lib/auth";
+import { signIn, signUp } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/login")({
       { title: "Entrar — Wine Hub" },
       {
         name: "description",
-        content: "Acesso exclusivo à sua adega digital. Sistema fechado, gerenciado pelo administrador.",
+        content: "Acesso à sua adega digital. Entre com e-mail e senha.",
       },
     ],
   }),
@@ -20,17 +21,31 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!email.trim() || !password.trim()) return;
-
     setSubmitting(true);
-    mockLogin(email.trim(), password);
-    navigate({ to: "/", replace: true });
+    try {
+      if (mode === "signin") {
+        await signIn(email.trim(), password);
+        navigate({ to: "/", replace: true });
+      } else {
+        await signUp(email.trim(), password);
+        toast.success("Conta criada. Verifique seu e-mail se a confirmação estiver ativa.");
+        await signIn(email.trim(), password).catch(() => {});
+        navigate({ to: "/", replace: true });
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Falha na autenticação";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -46,7 +61,9 @@ function LoginPage() {
 
       <div className="w-full max-w-sm">
         <div className="mb-10 text-center">
-          <p className="text-[11px] uppercase tracking-[0.45em] text-gold/70">Acesso exclusivo</p>
+          <p className="text-[11px] uppercase tracking-[0.45em] text-gold/70">
+            {mode === "signin" ? "Acesso exclusivo" : "Criar conta"}
+          </p>
           <h1 className="mt-3 font-serif text-5xl text-foreground md:text-6xl">Wine Hub</h1>
           <div className="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
         </div>
@@ -75,11 +92,12 @@ function LoginPage() {
             <Input
               id="password"
               type="password"
-              autoComplete="current-password"
+              autoComplete={mode === "signin" ? "current-password" : "new-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              minLength={6}
               className="h-11 border-border/60 bg-card/30 font-body backdrop-blur"
             />
           </div>
@@ -89,8 +107,16 @@ function LoginPage() {
             disabled={submitting || !email.trim() || !password.trim()}
             className="mt-2 h-11 w-full text-[11px] uppercase tracking-[0.3em]"
           >
-            Entrar
+            {mode === "signin" ? "Entrar" : "Criar conta"}
           </Button>
+
+          <button
+            type="button"
+            onClick={() => setMode((m) => (m === "signin" ? "signup" : "signin"))}
+            className="mx-auto block text-[11px] uppercase tracking-[0.25em] text-muted-foreground hover:text-gold"
+          >
+            {mode === "signin" ? "Criar uma conta" : "Já tenho conta — entrar"}
+          </button>
         </form>
       </div>
     </div>
